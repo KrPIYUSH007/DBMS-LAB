@@ -58,4 +58,29 @@ select * from loan;
 select branchname,(assets/100000) as assests_lakhs from branch;
 select d.customer_name,b.branch_name, count(*) as num_accounts from depositer d join bankaccount b on d.accno=b.accno group by d.customer_name,b.branch_name having count(*)>=2;
 create view amount_sum as select branch_name, sum(amount) as amount_total from loan group by branch_name;
-select * from amount_sum;
+select * from amount_sum;\
+select distinct d.customer_name from depositer d
+where d.customer_name in (select d2.customer_name from depositer d2 join bankaccount a2 on d2.accno = a2.accno join branch b2 on a2.branch_name = b2.branchname
+where b2.branch_city = 'Delhi');
+select distinct l.branch_name from loan l where l.branch_name not in (select distinct a.branch_name from bankaccount a);
+select distinct d.customer_name
+from depositer d join bankaccount a on d.accno = a.accno
+join branch b on a.branch_name = b.branchname where b.branch_city = 'Bangalore'
+and b.branchname in (select l.branch_name from loan l where l.branch_name = b.branchname);
+select branchname from branch
+where assets > all (select assets from branch where branch_city = 'Bangalore');
+update bankaccount set balance = balance * 1.05;
+select * from bankaccount;
+delete from bankaccount
+where branch_name in (select branch_name from branch where branch_city = 'Bombay');
+select * from bankaccount;
+ALTER TABLE depositer DROP FOREIGN KEY depositer_ibfk_2;
+
+ALTER TABLE depositer
+  ADD CONSTRAINT depositer_ibfk_2
+  FOREIGN KEY (accno) REFERENCES bankaccount(accno)
+  ON DELETE CASCADE;
+DELETE a
+FROM bankaccount a
+JOIN branch b ON a.branch_name = b.branchname
+WHERE b.branch_city = 'Bombay';
